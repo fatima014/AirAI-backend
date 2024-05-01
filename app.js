@@ -198,13 +198,14 @@ app.get('/api/closest-coordinates/pm25', (req, res) => {
       if (results.length === 0) {
         return res.status(404).json({ error: 'No data found for the given coordinates' });
       }
-  
+      
+      console.log(results);
       const closestData = results[0];
       return res.status(200).json({
         date: closestData.date,
         latitude: closestData.lat,
         longitude: closestData.lon,
-        pm25: closestData.pm25
+        concentration: closestData.concentration
       });
     });
   });
