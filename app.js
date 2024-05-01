@@ -182,7 +182,7 @@ app.get('/api/closest-coordinates/pm25', (req, res) => {
     // WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
 
     const sql = `
-      SELECT date, lat, lon, pm25
+      SELECT date, lat, lon, concentration
       FROM PM25
       WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 4 DAY)
       ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
