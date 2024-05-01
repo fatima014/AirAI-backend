@@ -170,11 +170,11 @@ app.get('/favicon.ico', (req, res) => {
 
 // Route to fetch closest PM2.5 data for given coordinates
 app.get('/api/closest-coordinates/pm25', (req, res) => {
-    const { latitude, longitude } = req.query;
+    let { latitude, longitude } = req.query;
 
     // convert to double
-    latitude = parseDouble(latitude);
-    longitude = parseDouble(longitude);
+    latitude = parseFloat(latitude);
+    longitude = parseFloat(longitude);
 
     // for two days ago
     // WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
@@ -209,12 +209,12 @@ app.get('/api/closest-coordinates/pm25', (req, res) => {
 
 // Route to fetch closest NO2 data for given coordinates
 app.get('/api/closest-coordinates/no2', (req, res) => {
-    const { latitude, longitude } = req.query;
+    let { latitude, longitude } = req.query;
 
     // for two days ago
     // WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
-    latitude = parseDouble(latitude);
-    longitude = parseDouble(longitude);
+    latitude = parseFloat(latitude);
+    longitude = parseFloat(longitude);
 
     const sql = `
       SELECT date, lat, lon, concentration, pollutant_level
@@ -248,12 +248,12 @@ app.get('/api/closest-coordinates/no2', (req, res) => {
 
 // Route to fetch closest SO2 data for given coordinates
 app.get('/api/closest-coordinates/so2', (req, res) => {
-    const { latitude, longitude } = req.query;
+    let { latitude, longitude } = req.query;
 
     // for two days ago
     // WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
-    latitude = parseDouble(latitude);
-    longitude = parseDouble(longitude);
+    latitude = parseFloat(latitude);
+    longitude = parseFloat(longitude);
     const sql = `
       SELECT date, lat, lon, concentration, pollutant_level
       FROM SO2
@@ -285,12 +285,12 @@ app.get('/api/closest-coordinates/so2', (req, res) => {
 
 // Route to fetch closest O3 data for given coordinates
 app.get('/api/closest-coordinates/o3', (req, res) => {
-    const { latitude, longitude } = req.query;
+    let { latitude, longitude } = req.query;
 
     // for two days ago
     // WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
-    latitude = parseDouble(latitude);
-    longitude = parseDouble(longitude);
+    latitude = parseFloat(latitude);
+    longitude = parseFloat(longitude);
     const sql = `
       SELECT date, lat, lon, concentration, pollutant_level
       FROM O3
@@ -322,12 +322,12 @@ app.get('/api/closest-coordinates/o3', (req, res) => {
 
 // Route to fetch closest O3 data for given coordinates
 app.get('/api/closest-coordinates/co', (req, res) => {
-    const { latitude, longitude } = req.query;
+    let { latitude, longitude } = req.query;
 
     // for two days ago
     // WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
-    latitude = parseDouble(latitude);
-    longitude = parseDouble(longitude);
+    latitude = parseFloat(latitude);
+    longitude = parseFloat(longitude);
     const sql = `
       SELECT date, lat, lon, concentration, pollutant_level
       FROM CO
