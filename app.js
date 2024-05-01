@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
 require('dotenv').config();
+const pool = require('./pool'); 
 
 const app = express();
 
@@ -166,3 +167,192 @@ app.get('/api/co/:date', (req, res) => {
 app.get('/favicon.ico', (req, res) => {
     res.send('Hello from Express!');
   });
+
+// Route to fetch closest PM2.5 data for given coordinates
+app.get('/api/closest-coordinates/pm25', (req, res) => {
+    const { latitude, longitude } = req.query;
+
+    // convert to double
+    latitude = parseDouble(latitude);
+    longitude = parseDouble(longitude);
+
+    // for two days ago
+    // WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+
+    const sql = `
+      SELECT date, lat, lon, pm25
+      FROM PM25
+      WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 5 DAY)
+      ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
+      LIMIT 1
+    `;
+  
+    pool.query(sql, [latitude, longitude], (err, results) => {
+      if (err) {
+        console.error('Error querying database:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'No data found for the given coordinates' });
+      }
+  
+      const closestData = results[0];
+      return res.status(200).json({
+        date: closestData.date,
+        latitude: closestData.lat,
+        longitude: closestData.lon,
+        pm25: closestData.pm25
+      });
+    });
+  });
+
+// Route to fetch closest NO2 data for given coordinates
+app.get('/api/closest-coordinates/no2', (req, res) => {
+    const { latitude, longitude } = req.query;
+
+    // for two days ago
+    // WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+    latitude = parseDouble(latitude);
+    longitude = parseDouble(longitude);
+
+    const sql = `
+      SELECT date, lat, lon, concentration, pollutant_level
+      FROM NO2
+      WHERE DATE(date) = CURDATE()
+      ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
+      LIMIT 1
+    `;
+  
+    pool.query(sql, [latitude, longitude], (err, results) => {
+      if (err) {
+        console.error('Error querying database:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'No data found for the given coordinates' });
+      }
+  
+      const closestData = results[0];
+      return res.status(200).json({
+        date: closestData.date,
+        latitude: closestData.lat,
+        longitude: closestData.lon,
+        concentration: closestData.concentration,
+        pollutant_level: closestData.pollutant_level
+      });
+    });
+  });
+
+
+// Route to fetch closest SO2 data for given coordinates
+app.get('/api/closest-coordinates/so2', (req, res) => {
+    const { latitude, longitude } = req.query;
+
+    // for two days ago
+    // WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+    latitude = parseDouble(latitude);
+    longitude = parseDouble(longitude);
+    const sql = `
+      SELECT date, lat, lon, concentration, pollutant_level
+      FROM SO2
+      WHERE DATE(date) = CURDATE()
+      ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
+      LIMIT 1
+    `;
+  
+    pool.query(sql, [latitude, longitude], (err, results) => {
+      if (err) {
+        console.error('Error querying database:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'No data found for the given coordinates' });
+      }
+  
+      const closestData = results[0];
+      return res.status(200).json({
+        date: closestData.date,
+        latitude: closestData.lat,
+        longitude: closestData.lon,
+        concentration: closestData.concentration,
+        pollutant_level: closestData.pollutant_level
+      });
+    });
+});
+
+// Route to fetch closest O3 data for given coordinates
+app.get('/api/closest-coordinates/o3', (req, res) => {
+    const { latitude, longitude } = req.query;
+
+    // for two days ago
+    // WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+    latitude = parseDouble(latitude);
+    longitude = parseDouble(longitude);
+    const sql = `
+      SELECT date, lat, lon, concentration, pollutant_level
+      FROM O3
+      WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 5 DAY)
+      ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
+      LIMIT 1
+    `;
+  
+    pool.query(sql, [latitude, longitude], (err, results) => {
+      if (err) {
+        console.error('Error querying database:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'No data found for the given coordinates' });
+      }
+  
+      const closestData = results[0];
+      return res.status(200).json({
+        date: closestData.date,
+        latitude: closestData.lat,
+        longitude: closestData.lon,
+        concentration: closestData.concentration,
+        pollutant_level: closestData.pollutant_level
+      });
+    });
+});
+
+// Route to fetch closest O3 data for given coordinates
+app.get('/api/closest-coordinates/co', (req, res) => {
+    const { latitude, longitude } = req.query;
+
+    // for two days ago
+    // WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+    latitude = parseDouble(latitude);
+    longitude = parseDouble(longitude);
+    const sql = `
+      SELECT date, lat, lon, concentration, pollutant_level
+      FROM CO
+      WHERE DATE(date) = CURDATE()
+      ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
+      LIMIT 1
+    `;
+  
+    pool.query(sql, [latitude, longitude], (err, results) => {
+      if (err) {
+        console.error('Error querying database:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'No data found for the given coordinates' });
+      }
+  
+      const closestData = results[0];
+      return res.status(200).json({
+        date: closestData.date,
+        latitude: closestData.lat,
+        longitude: closestData.lon,
+        concentration: closestData.concentration,
+        pollutant_level: closestData.pollutant_level
+      });
+    });
+});
