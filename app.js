@@ -347,10 +347,13 @@ app.get('/api/location', (req, res) => {
       if (results.length === 0) {
         return res.status(404).json({ error: 'No location found for the given coordinates' });
       }
-  
+      
       const location = results[0];
+
       return res.status(200).json({
-        location: location.location
+        city: location.city,
+        district: location.district,
+        province: location.province
       });
     });
   });
