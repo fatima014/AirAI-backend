@@ -185,7 +185,7 @@ app.get('/api/closest-coordinates/pm25', (req, res) => {
     const sql = `
       SELECT date, lat, lon, pm25
       FROM PM25
-      WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 5 DAY)
+      WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 4 DAY)
       ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
       LIMIT 1
     `;
@@ -222,7 +222,7 @@ app.get('/api/closest-coordinates/no2', (req, res) => {
     const sql = `
       SELECT date, lat, lon, concentration, pollutant_level
       FROM NO2
-      WHERE DATE(date) = CURDATE()
+      WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 4 DAY)
       ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
       LIMIT 1
     `;
@@ -260,7 +260,7 @@ app.get('/api/closest-coordinates/so2', (req, res) => {
     const sql = `
       SELECT date, lat, lon, concentration, pollutant_level
       FROM SO2
-      WHERE DATE(date) = CURDATE()
+      WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 4 DAY)
       ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
       LIMIT 1
     `;
