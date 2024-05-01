@@ -323,6 +323,38 @@ app.get('/api/closest-coordinates/o3', (req, res) => {
     });
 });
 
+
+// route to fetch location of given coordinates
+app.get('/api/location', (req, res) => {
+    let { latitude, longitude } = req.query;
+
+    latitude = parseFloat(latitude);
+    longitude = parseFloat(longitude);
+
+    const sql = `
+      SELECT city, district, province
+      FROM Location
+      ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
+      LIMIT 1
+    `;
+  
+    pool.query(sql, [latitude, longitude], (err, results) => {
+      if (err) {
+        console.error('Error querying database:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+  
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'No location found for the given coordinates' });
+      }
+  
+      const location = results[0];
+      return res.status(200).json({
+        location: location.location
+      });
+    });
+  });
+
 // Route to fetch closest O3 data for given coordinates
 app.get('/api/closest-coordinates/co', (req, res) => {
     let { latitude, longitude } = req.query;
