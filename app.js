@@ -60,6 +60,36 @@ function getSO2DataForDate(date, callback) {
     });
 }
 
+function getO3DataForDate(date, callback) {
+    const query = `SELECT * FROM O3 WHERE date = ?`;
+    connection.query(query, [date], (err, results) => {
+        if (err) {
+            console.error('Error executing query:', err);
+            return callback(err, null);
+        }
+        if (results.length > 0) {
+            return callback(null, results);
+        } else {
+            return callback(null, []);
+        }
+    });
+}
+
+function getCODataForDate(date, callback) {
+    const query = `SELECT * FROM CO WHERE date = ?`;
+    connection.query(query, [date], (err, results) => {
+        if (err) {
+            console.error('Error executing query:', err);
+            return callback(err, null);
+        }
+        if (results.length > 0) {
+            return callback(null, results);
+        } else {
+            return callback(null, []);
+        }
+    });
+}
+
 
 app.use(express.json());
 app.post('/submit-form', (req, res) => {
@@ -107,6 +137,32 @@ app.get('/api/so2/:date', (req, res) => {
     });
 });
 
+app.get('/api/o3/:date', (req, res) => {
+    const date = req.params.date;
+    console.log('Fetching O3 data for', date);
+    getO3DataForDate(date, (err, data) => {
+        if (err) {
+            console.error('Error:', err);
+            res.status(500).json({ error: 'An error occurred while fetching NO2 data.' });
+        } else {
+            res.json({ date: date, data: data });
+        }
+    });
+});
+
+app.get('/api/co/:date', (req, res) => {
+    const date = req.params.date;
+    console.log('Fetching CO data for', date);
+    getCODataForDate(date, (err, data) => {
+        if (err) {
+            console.error('Error:', err);
+            res.status(500).json({ error: 'An error occurred while fetching NO2 data.' });
+        } else {
+            res.json({ date: date, data: data });
+        }
+    });
+});
+
 app.get('/favicon.ico', (req, res) => {
-    res.status(204).end();
+    res.send('Hello from Express!');
   });
