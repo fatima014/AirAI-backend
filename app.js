@@ -184,7 +184,10 @@ app.get('/api/closest-coordinates/pm25', (req, res) => {
     const sql = `
       SELECT date, lat, lon, concentration
       FROM PM25
-      WHERE DATE(date) = CURDATE()
+      WHERE date = (
+        SELECT MAX(date)
+        FROM PM25
+      )
       ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
       LIMIT 1
     `;
@@ -221,8 +224,11 @@ app.get('/api/closest-coordinates/no2', (req, res) => {
 
     const sql = `
       SELECT date, lat, lon, concentration, pollutant_level
-      FROM NO2
-      WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+      FROM SO2
+      WHERE date = (
+        SELECT MAX(date)
+        FROM SO2
+      )
       ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
       LIMIT 1
     `;
@@ -260,7 +266,10 @@ app.get('/api/closest-coordinates/so2', (req, res) => {
     const sql = `
       SELECT date, lat, lon, concentration, pollutant_level
       FROM SO2
-      WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 2 DAY)
+      WHERE date = (
+        SELECT MAX(date)
+        FROM SO2
+      )
       ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
       LIMIT 1
     `;
@@ -296,8 +305,11 @@ app.get('/api/closest-coordinates/o3', (req, res) => {
     longitude = parseFloat(longitude);
     const sql = `
       SELECT date, lat, lon, concentration, pollutant_level
-      FROM O3
-      WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 5 DAY)
+      FROM SO2
+      WHERE date = (
+        SELECT MAX(date)
+        FROM SO2
+      )
       ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
       LIMIT 1
     `;
@@ -368,8 +380,11 @@ app.get('/api/closest-coordinates/co', (req, res) => {
     longitude = parseFloat(longitude);
     const sql = `
       SELECT date, lat, lon, concentration, pollutant_level
-      FROM CO
-      WHERE DATE(date) = CURDATE()
+      FROM SO2
+      WHERE date = (
+        SELECT MAX(date)
+        FROM SO2
+      )
       ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
       LIMIT 1
     `;
