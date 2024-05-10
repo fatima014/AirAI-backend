@@ -3,6 +3,8 @@ const mysql = require('mysql');
 require('dotenv').config();
 const pool = require('./pool'); 
 const cors = require('cors');
+const moment = require('moment');
+
 
 
 const app = express();
@@ -408,4 +410,55 @@ app.get('/api/closest-coordinates/co', (req, res) => {
         pollutant_level: closestData.pollutant_level
       });
     });
+});
+
+app.get('/api/forecast-next-three-days', (req, res) => {
+  let { latitude, longitude } = req.query;
+
+  latitude = parseFloat(latitude);
+  longitude = parseFloat(longitude);
+
+  const currentDate = moment().format('YYYY-MM-DD');
+  const endDate = moment().add(3, 'days').format('YYYY-MM-DD');
+
+  const closestPointQuery = `
+    SELECT lat, lon
+    FROM FORECAST
+    ORDER BY SQRT(POWER(lat - ?, 2) + POWER(lon - ?, 2))
+    LIMIT 1;
+  `;
+
+  pool.query(closestPointQuery, [latitude, longitude], (err, closestPointResults) => {
+    if (err) {
+      console.error('Error querying closest point:', err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    if (closestPointResults.length === 0) {
+      return res.status(404).json({ error: 'No closest point found' });
+    }
+
+    const { lat, lon } = closestPointResults[0];
+
+    const forecastQuery = `
+      SELECT date, lat, lon, concentration
+      FROM FORECAST
+      WHERE lat = ? AND lon = ?
+        AND date BETWEEN ? AND ?
+      ORDER BY date;
+    `;
+
+    pool.query(forecastQuery, [lat, lon, currentDate, endDate], (forecastErr, forecastResults) => {
+      if (forecastErr) {
+        console.error('Error querying forecast data:', forecastErr);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+
+      if (forecastResults.length === 0) {
+        return res.status(404).json({ error: 'No forecast data available for the closest point in the next three days' });
+      }
+
+      return res.status(200).json({ forecastData: forecastResults });
+    });
+  });
 });
