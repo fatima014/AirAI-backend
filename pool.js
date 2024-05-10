@@ -6,7 +6,8 @@ const pool = mysql.createPool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT,
-  database: 'AirAI'
+  database: 'AirAI',
+  connectTimeout: 50000
 });
 
 module.exports = pool;
